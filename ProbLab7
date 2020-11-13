@@ -1,0 +1,189 @@
+#include <iostream>
+
+using namespace std;
+
+
+
+class Persoana
+{
+    string nume;
+    string cnp;
+    float inaltime;
+public:
+    Persoana()
+    {
+        this->nume="anonim";
+        this->cnp="0";
+    }
+    Persoana(string nume,string cnp,float inaltime)
+    {
+        this->nume=nume;
+        this->cnp=cnp;
+        this->inaltime=inaltime;
+    }
+    Persoana(const Persoana& persoana)
+    {
+        this->nume=persoana.nume;
+        this->cnp=persoana.cnp;
+        this->inaltime=persoana.inaltime;
+    }
+    Persoana& operator=(const Persoana& persoana)
+    {
+        if(this!=NULL)
+        {
+            this->nume=persoana.nume;
+            this->cnp=persoana.cnp;
+            this->inaltime=persoana.inaltime;
+        }
+        return *this;
+    }
+    bool operator<(const Persoana& persoana)
+    {
+        return this->inaltime<persoana.inaltime;
+    }
+     friend ostream& operator<<(ostream& out, const Persoana& p)
+   {
+          out<<p.nume<<" "<<p.cnp<<" "<<p.inaltime;
+          return out;
+
+   }
+
+   friend istream& operator>>(istream& in, Persoana& p)
+   {
+
+       cout<<"Numele este: ";
+       in>>p.nume;
+       cout<<"CNP-ul este: ";
+       in>>p.cnp;
+       cout<<"Inaltimea este: ";
+       in>>p.inaltime;
+
+       return in;
+   }
+
+    ~Persoana()
+    {
+
+    }
+
+
+
+};
+class Student: public Persoana
+{
+    string fac;
+    bool buget;
+    int nrnote;
+    int* note;
+public:
+    Student():Persoana()
+    {
+        this->fac="anonim";
+        this->buget=0;
+        this->nrnote=0;
+        this->note=NULL;
+    }
+    Student(string fac,bool buget,int nrnote,int* note,string nume,string cnp,float inaltime):Persoana(nume,cnp,inaltime)
+    {
+        this->fac=fac;
+        this->buget=buget;
+        this->nrnote=nrnote;
+        this->note=new int[nrnote+1];
+        for(int i=0; i<nrnote; i++)
+            this->note[i]=note[i];
+    }
+    Student(const Student& student):Persoana(student)
+    {
+        this->fac=student.fac;
+        this->buget=student.buget;
+        this->nrnote=student.nrnote;
+        this->note=new int[student.nrnote+1];
+        for(int i=0; i<student.nrnote; i++)
+            this->note[i]=student.note[i];
+    }
+    Student& operator=(const Student& student)
+    {
+        if(this!=&student)
+        {
+            Persoana::operator=(student);
+            this->fac=student.fac;
+            this->buget=student.buget;
+            this->nrnote=student.nrnote;
+            this->note=new int[student.nrnote+1];
+            for(int i=0; i<student.nrnote; i++)
+                this->note[i]=student.note[i];
+
+        }
+        return *this;
+    }
+    float medie()
+    {
+        float x=0;
+        for(int i=0;i<nrnote;i++)
+            x+=note[i];
+        return x/nrnote;
+    }
+
+    bool operator<(Student student)
+    {
+        return this->medie()<student.medie();
+    }
+
+    friend ostream& operator<<(ostream& out, const Student& s)
+     {
+
+         out<<(Persoana&)s;
+         out<<" "<<s.fac<<" "<<s.buget<<" "<<s.nrnote<<" ";
+         for(int i=0;i<s.nrnote;i++)
+            out<<s.note[i]<<" ";
+         return out;
+
+     }
+
+    friend istream& operator>>(istream& in, Student& s){
+
+        in>>(Persoana&)s;
+        cout<<"Introduceti facultatea: ";
+        in>>s.fac;
+        cout<<"Buget?";
+        in>>s.buget;
+        cout<<"Introduceti nr note:";
+        in>>s.nrnote;
+        if(s.note!=NULL)
+            delete[] s.note;
+        cout<<"Introduceti notele!";
+        for(int i=0;i<s.nrnote;i++)
+            in>>s.note[i];
+
+
+        return in;
+
+    }
+
+
+    ~Student()
+    {
+        if(this->note!=NULL)
+            delete[] this->note;
+    }
+
+
+
+};
+
+int main()
+{
+    Persoana p1("aurel","500104385454",1.94);
+    Persoana p2;
+    p2=p1;
+    cout<<p1<<endl;
+    cout<<p2<<endl;
+    int v[3]={9,10};
+    int v1[3]={5,6};
+    Student s2("mate",1,2,v,"mihai","46565",1.84);
+    Student s3("mate",1,2,v1,"mihai","46565",1.84);
+    cout<<s2<<endl;
+    cout<<s3<<endl;
+    cout<<(s2.medie()<s3.medie());
+    return 0;
+}
