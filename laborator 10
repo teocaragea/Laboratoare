@@ -1,0 +1,167 @@
+#include <iostream>
+// for vector
+#include <vector> //https://www.geeksforgeeks.org/vector-in-cpp-stl/
+#include <map>
+// for list
+#include <list>     //https://www.geeksforgeeks.org/list-cpp-stl/
+#include <iterator>
+#include<set>
+
+using namespace std;
+// interfata
+class Taxe
+{
+public:
+    virtual float Impozit()=0;
+    virtual int ani()=0;
+
+};
+// clasa abstracta
+class Produs
+{
+protected:
+    string nume;
+    float pretBrut;
+public:
+    void afisareBrand()
+    {
+
+        cout<<"Acest produs apartine EDI>.RL";
+
+    }
+    virtual  float calculeazaPret()=0;
+
+     bool operator>(const Produs& produs)
+    {
+        return (this->pretBrut>produs.pretBrut);
+    }
+     bool operator<(const Produs& produs)
+    {
+        return (this->pretBrut<produs.pretBrut);
+    }
+     bool operator==(const Produs& produs)
+    {
+        return (this->pretBrut==produs.pretBrut);
+    }
+
+
+    friend ostream& operator<<(ostream& out,const Produs& p)
+    {
+
+        out<<p.nume;
+        return out;
+
+
+    }
+    friend istream& operator >>(istream& in, Produs&p)
+    {
+
+        cout<<"Numele este: ";
+        in>>p.nume;
+        cout<<"Pretul brut este: ";
+        in>>p.pretBrut;
+        return in;
+
+    }
+
+
+};
+
+class ProdusPersibail:public Produs
+{
+    string dataExpirare;
+public:
+
+    float calculeazaPret()
+    {
+
+        return pretBrut+(40*pretBrut)/100;
+
+    }
+
+    friend ostream& operator<<(ostream& out,const ProdusPersibail& p)
+    {
+        out<<(Produs&)p;
+        out<<" "<<p.dataExpirare;
+        return out;
+
+    }
+    friend istream& operator >>(istream& in, ProdusPersibail&p)
+    {
+
+        in>>(Produs&)p;
+        cout<<"Dati data: ";
+        in>>p.dataExpirare;
+        return in;
+    }
+
+
+};
+
+class ProdusNePerisbalil:public Produs
+{
+    int garantie;
+public:
+    float calculeazaPret()
+    {
+
+        return pretBrut+(10*pretBrut)/100;
+
+    }
+
+
+    friend ostream& operator<<(ostream& out,const ProdusNePerisbalil& p)
+    {
+        out<<(Produs&)p;
+        out<<" "<<p.garantie;
+        return out;
+
+    }
+    friend istream& operator >>(istream& in, ProdusNePerisbalil&p)
+    {
+
+        in>>(Produs&)p;
+        cout<<"ani garantie: ";
+        in>>p.garantie;
+        return in;
+    }
+
+
+
+
+
+
+};
+
+int main()
+{
+    ProdusPersibail pp;
+    ProdusNePerisbalil pn;
+    cin>>pp>>pn;
+
+    int i=0;
+    map<int,Produs*> mmap;
+    mmap.insert(pair<int,Produs*>(++i, &pp));
+    mmap.insert(pair<int,Produs*>(++i, &pn));
+
+
+    map<int, Produs*>::iterator itr;
+    for (itr = mmap.begin(); itr !=mmap.end(); ++itr)
+        cout<< itr->first <<" "<<*(itr->second)<<'\n';
+
+
+    set<Produs*, greater<Produs> > s1;
+    s1.insert(&pp);
+    s1.insert(&pn);
+    set<Produs*, greater<Produs*> >::iterator it;
+    for (it = s1.begin();
+            it != s1.end(); ++it)
+    {
+        cout << ',' << *(*it);
+    }
+    cout << endl;
+
+
+
+    return 0;
+}
